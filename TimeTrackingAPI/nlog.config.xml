@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      autoReload="true"
+      internalLogLevel="Info"
+      internalLogFile="logs/internal-nlog.txt">
+
+	<targets>
+		<target name="file" xsi:type="File"
+				fileName="${basedir}/logs/${shortdate}.log"
+				layout="${longdate} ${level:uppercase=true} ${logger} - ${message} ${exception:format=toString}"
+				archiveFileName="${basedir}/logs/archive.{#}.log"
+				archiveEvery="Day"
+				maxArchiveFiles="30" />
+
+		<target name="console" xsi:type="Console"
+				layout="${longdate} ${level:uppercase=true} ${logger} - ${message}" />
+	</targets>
+
+	<rules>
+		<logger name="*" minlevel="Info" writeTo="file,console" />
+		<logger name="Microsoft.*" maxlevel="Warn" final="true" />
+		<logger name="System.*" maxlevel="Warn" final="true" />
+		<logger name="Microsoft.EntityFrameworkCore.*" maxlevel="Warn" final="true" />
+	</rules>
+</nlog>

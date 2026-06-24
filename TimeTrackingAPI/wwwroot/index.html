@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Учет рабочего времени</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⏰ Учет рабочего времени</h1>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="showAllProjects()">📋 Проекты</button>
+                <button class="btn btn-primary" onclick="showAllTasks()">📝 Задачи</button>
+                <button class="btn btn-success" onclick="showAllTimeEntries()">⏱ Проводки</button>
+            </div>
+        </header>
+
+        <!-- Главный контент -->
+        <div id="mainContent">
+            <div class="welcome">
+                <h2>Добро пожаловать в систему учета рабочего времени!</h2>
+                <p>Выберите раздел для работы:</p>
+                <div class="quick-actions">
+                    <div class="quick-card" onclick="showAllProjects()">
+                        <div class="quick-icon">📋</div>
+                        <h3>Проекты</h3>
+                        <p>Управление проектами</p>
+                    </div>
+                    <div class="quick-card" onclick="showAllTasks()">
+                        <div class="quick-icon">📝</div>
+                        <h3>Задачи</h3>
+                        <p>Управление задачами</p>
+                    </div>
+                    <div class="quick-card" onclick="showAllTimeEntries()">
+                        <div class="quick-icon">⏱</div>
+                        <h3>Проводки</h3>
+                        <p>Учет рабочего времени</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно -->
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <div id="modalBody">
+                    <!-- Содержимое модального окна -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>
