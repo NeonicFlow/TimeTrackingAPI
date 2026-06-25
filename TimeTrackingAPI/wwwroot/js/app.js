@@ -1,7 +1,5 @@
 ﻿const API_BASE = '/api';
 
-// ==================== ОБЩИЕ ФУНКЦИИ ====================
-
 async function apiRequest(endpoint, method = 'GET', data = null) {
     const options = {
         method: method,
@@ -95,8 +93,6 @@ window.onclick = function (event) {
         closeModal();
     }
 };
-
-// ==================== ПРОЕКТЫ ====================
 
 async function showAllProjects() {
     try {
@@ -326,8 +322,6 @@ async function showProjectTasks(projectId) {
     }
 }
 
-// ==================== ЗАДАЧИ ====================
-
 async function showAllTasks() {
     try {
         const tasks = await apiRequest('/tasks');
@@ -525,8 +519,6 @@ async function deleteTask(id) {
     }
 }
 
-// ==================== ПРОВОДКИ ====================
-
 async function showAllTimeEntries() {
     try {
         const entries = await apiRequest('/timeentries');
@@ -537,7 +529,6 @@ async function showAllTimeEntries() {
 }
 
 async function renderTimeEntries(entries, date = null, month = null) {
-    // Сортируем записи по дате (сначала новые)
     if (entries) {
         entries.sort((a, b) => new Date(b.entryDate) - new Date(a.entryDate));
     }
@@ -566,12 +557,10 @@ async function renderTimeEntries(entries, date = null, month = null) {
             </div>
     `;
 
-    // ✅ ВСЕГДА ПОКАЗЫВАЕМ ОБЩЕЕ КОЛИЧЕСТВО ЧАСОВ
     if (entries && entries.length > 0) {
         const totalHours = entries.reduce((sum, e) => sum + e.hours, 0);
 
         let statusHtml = '';
-        // ✅ СТИКЕР ПОКАЗЫВАЕМ ТОЛЬКО ДЛЯ КОНКРЕТНОГО ДНЯ
         if (date) {
             const status = totalHours < 8 ? 'Yellow' : totalHours === 8 ? 'Green' : 'Red';
             const statusText = status === 'Yellow' ? '⚠️ Недостаточно' :
@@ -715,7 +704,6 @@ async function showCreateTimeEntryForm() {
     }
 }
 
-// Добавьте эту функцию для валидации часов
 function validateHours(input) {
     let value = parseFloat(input.value);
     if (isNaN(value) || value < 0.1) {
@@ -723,7 +711,6 @@ function validateHours(input) {
     } else if (value > 24) {
         input.value = 24;
     }
-    // Округляем до 1 знака после запятой
     input.value = Math.round(parseFloat(input.value) * 10) / 10;
 }
 
@@ -823,8 +810,6 @@ async function deleteTimeEntry(id) {
         console.error('Error deleting time entry:', error);
     }
 }
-
-// ==================== ИНИЦИАЛИЗАЦИЯ ====================
 
 document.addEventListener('DOMContentLoaded', function () {
     console.log('Time Tracking App загружен!');

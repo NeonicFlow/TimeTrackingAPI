@@ -19,7 +19,6 @@ namespace TimeTrackingAPI.Controllers
             _logger = logger;
         }
 
-        // ==================== GET: api/projects ====================
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProjectDto>>> GetProjects()
         {
@@ -45,7 +44,6 @@ namespace TimeTrackingAPI.Controllers
             }
         }
 
-        // ==================== GET: api/projects/{id} ====================
         [HttpGet("{id}")]
         public async Task<ActionResult<ProjectDto>> GetProject(int id)
         {
@@ -77,7 +75,6 @@ namespace TimeTrackingAPI.Controllers
             }
         }
 
-        // ==================== POST: api/projects ====================
         [HttpPost]
         public async Task<ActionResult<ProjectDto>> CreateProject(CreateProjectDto createDto)
         {
@@ -121,7 +118,6 @@ namespace TimeTrackingAPI.Controllers
             }
         }
 
-        // ==================== PUT: api/projects/{id} ====================
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProject(int id, UpdateProjectDto updateDto)
         {
@@ -134,7 +130,6 @@ namespace TimeTrackingAPI.Controllers
                     return NotFound($"Project with ID {id} not found");
                 }
 
-                // Проверяем уникальность кода (исключая текущий проект)
                 var existingProject = await _context.Projects
                     .FirstOrDefaultAsync(p => p.Code == updateDto.Code && p.Id != id);
 
@@ -143,10 +138,8 @@ namespace TimeTrackingAPI.Controllers
                     return BadRequest($"Project with code '{updateDto.Code}' already exists");
                 }
 
-                // Сохраняем старое состояние для проверки
                 var oldStatus = project.IsActive;
 
-                // Обновляем проект
                 project.Name = updateDto.Name;
                 project.Code = updateDto.Code;
                 project.IsActive = updateDto.IsActive;
@@ -154,7 +147,6 @@ namespace TimeTrackingAPI.Controllers
 
                 await _context.SaveChangesAsync();
 
-                // ✅ Если статус изменился, обновляем все задачи
                 if (oldStatus != updateDto.IsActive)
                 {
                     await UpdateTaskStatusByProject(id, updateDto.IsActive);
@@ -170,7 +162,6 @@ namespace TimeTrackingAPI.Controllers
             }
         }
 
-        // ==================== DELETE: api/projects/{id} ====================
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProject(int id)
         {
@@ -183,7 +174,6 @@ namespace TimeTrackingAPI.Controllers
                     return NotFound($"Project with ID {id} not found");
                 }
 
-                // Проверяем, есть ли связанные задачи
                 var hasTasks = await _context.Tasks.AnyAsync(t => t.ProjectId == id);
                 if (hasTasks)
                 {
@@ -203,7 +193,6 @@ namespace TimeTrackingAPI.Controllers
             }
         }
 
-        // ==================== GET: api/projects/{id}/tasks ====================
         [HttpGet("{id}/tasks")]
         public async Task<ActionResult<IEnumerable<TaskDto>>> GetProjectTasks(int id)
         {
@@ -237,15 +226,10 @@ namespace TimeTrackingAPI.Controllers
             }
         }
 
-        // ==================== НОВЫЙ МЕТОД: Обновление статуса задач ====================
-        /// <summary>
-        /// Обновляет статус всех задач проекта при изменении статуса проекта
-        /// </summary>
         private async System.Threading.Tasks.Task UpdateTaskStatusByProject(int projectId, bool isActive)
         {
             try
             {
-                // Находим все задачи проекта (используем полное имя для модели Task)
                 var tasks = await _context.Tasks
                     .Where(t => t.ProjectId == projectId)
                     .ToListAsync();
@@ -256,7 +240,6 @@ namespace TimeTrackingAPI.Controllers
                     return;
                 }
 
-                // Обновляем статус каждой задачи
                 foreach (var task in tasks)
                 {
                     task.IsActive = isActive;

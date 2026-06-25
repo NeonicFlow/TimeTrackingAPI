@@ -6,12 +6,10 @@ using TimeTrackingAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Настройка NLog
 builder.Logging.ClearProviders();
 builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
 builder.Host.UseNLog();
 
-// Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -24,14 +22,11 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Настройка Entity Framework
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Регистрация сервисов
 builder.Services.AddScoped<ITimeEntryService, TimeEntryService>();
 
-// Настройка CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
@@ -45,7 +40,6 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -54,7 +48,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Добавляем поддержку статических файлов (для HTML)
 app.UseStaticFiles();
 
 app.UseCors("AllowAll");
@@ -63,7 +56,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Автоматическое создание базы данных при запуске
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();

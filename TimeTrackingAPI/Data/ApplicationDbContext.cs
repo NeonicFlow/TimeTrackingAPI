@@ -18,10 +18,9 @@ namespace TimeTrackingAPI.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // ✅ ДОБАВЛЯЕМ НАСТРОЙКУ ДЛЯ DECIMAL
             modelBuilder.Entity<TimeEntry>()
                 .Property(t => t.Hours)
-                .HasPrecision(5, 2);  // 5 цифр всего, 2 после запятой
+                .HasPrecision(5, 2);
 
             modelBuilder.Entity<TimeTrackingAPI.Models.Task>()
                 .HasIndex(t => t.ProjectId);

@@ -20,9 +20,8 @@ namespace TimeTrackingAPI.Services
         {
             try
             {
-                // ✅ ИСПРАВЛЕНО: Считаем сумму часов за день ПО ВСЕМ ЗАДАЧАМ
                 var dailyTotal = await _context.TimeEntries
-                    .Where(t => t.EntryDate.Date == date.Date)  // ← УБРАЛИ t.TaskId
+                    .Where(t => t.EntryDate.Date == date.Date)
                     .SumAsync(t => t.Hours);
 
                 var newTotal = dailyTotal + hours;

@@ -432,7 +432,6 @@ table {
 ::-webkit-scrollbar-thumb:hover {
     background: #a0aec0;
 }
-/* Стили для полей ввода чисел */
 input[type="number"] {
     -moz-appearance: textfield;
 }
@@ -443,7 +442,6 @@ input[type="number"] {
         margin: 0;
     }
 
-/* Подсветка полей с ошибками */
 .form-group input:invalid,
 .form-group select:invalid {
     border-color: #fc8181;

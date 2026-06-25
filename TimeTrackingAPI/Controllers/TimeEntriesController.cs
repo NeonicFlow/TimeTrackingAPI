@@ -25,7 +25,6 @@ namespace TimeTrackingAPI.Controllers
             _logger = logger;
         }
 
-        // GET: api/timeentries
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TimeEntryDto>>> GetTimeEntries()
         {
@@ -57,7 +56,6 @@ namespace TimeTrackingAPI.Controllers
             }
         }
 
-        // GET: api/timeentries/by-date?date=2026-06-22
         [HttpGet("by-date")]
         public async Task<ActionResult<IEnumerable<TimeEntryDto>>> GetTimeEntriesByDate([FromQuery] DateTime date)
         {
@@ -90,7 +88,6 @@ namespace TimeTrackingAPI.Controllers
             }
         }
 
-        // GET: api/timeentries/by-month?month=2026-06
         [HttpGet("by-month")]
         public async Task<ActionResult<IEnumerable<TimeEntryDto>>> GetTimeEntriesByMonth([FromQuery] string month)
         {
@@ -131,7 +128,6 @@ namespace TimeTrackingAPI.Controllers
             }
         }
 
-        // GET: api/timeentries/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<TimeEntryDto>> GetTimeEntry(int id)
         {
@@ -168,13 +164,11 @@ namespace TimeTrackingAPI.Controllers
             }
         }
 
-        // POST: api/timeentries
         [HttpPost]
         public async Task<ActionResult<TimeEntryDto>> CreateTimeEntry(CreateTimeEntryDto createDto)
         {
             try
             {
-                // Проверяем существование задачи
                 var task = await _context.Tasks
                     .Include(t => t.Project)
                     .FirstOrDefaultAsync(t => t.Id == createDto.TaskId);
@@ -184,19 +178,16 @@ namespace TimeTrackingAPI.Controllers
                     return BadRequest($"Task with ID {createDto.TaskId} not found");
                 }
 
-                // Проверяем, что задача активна (нельзя выбрать неактивную задачу)
                 if (!task.IsActive)
                 {
                     return BadRequest("Cannot create time entry for inactive task");
                 }
 
-                // Проверяем, что проект активен
                 if (task.Project != null && !task.Project.IsActive)
                 {
                     return BadRequest("Cannot create time entry for task in inactive project");
                 }
 
-                // Проверяем, что сумма часов за день не превышает 24
                 var isValid = await _timeEntryService.ValidateDailyHours(
                     createDto.TaskId,
                     createDto.EntryDate,
@@ -242,7 +233,6 @@ namespace TimeTrackingAPI.Controllers
             }
         }
 
-        // PUT: api/timeentries/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTimeEntry(int id, UpdateTimeEntryDto updateDto)
         {
@@ -258,7 +248,6 @@ namespace TimeTrackingAPI.Controllers
                     return NotFound($"Time entry with ID {id} not found");
                 }
 
-                // Проверяем, можно ли редактировать задачу (если задача неактивна - запрещаем менять)
                 if (timeEntry.Task != null && !timeEntry.Task.IsActive)
                 {
                     if (timeEntry.TaskId != updateDto.TaskId)
@@ -267,7 +256,6 @@ namespace TimeTrackingAPI.Controllers
                     }
                 }
 
-                // Проверяем новую задачу
                 var newTask = await _context.Tasks
                     .Include(t => t.Project)
                     .FirstOrDefaultAsync(t => t.Id == updateDto.TaskId);
@@ -287,9 +275,8 @@ namespace TimeTrackingAPI.Controllers
                     return BadRequest("Cannot assign time entry to task in inactive project");
                 }
 
-                // ✅ ИСПРАВЛЕНО: Проверяем сумму часов за день по ВСЕМ задачам (исключая текущую)
                 var existingHours = await _context.TimeEntries
-                    .Where(t => t.EntryDate.Date == updateDto.EntryDate.Date && t.Id != id)  // ← убрали TaskId
+                    .Where(t => t.EntryDate.Date == updateDto.EntryDate.Date && t.Id != id)
                     .SumAsync(t => t.Hours); 
 
                 if (existingHours + updateDto.Hours > 24)
@@ -297,7 +284,6 @@ namespace TimeTrackingAPI.Controllers
                     return BadRequest("Total hours for this day would exceed 24 hours");
                 }
 
-                // Обновляем проводку
                 timeEntry.EntryDate = updateDto.EntryDate;
                 timeEntry.Hours = updateDto.Hours;
                 timeEntry.Description = updateDto.Description ?? string.Empty;
@@ -316,7 +302,6 @@ namespace TimeTrackingAPI.Controllers
             }
         }
 
-        // DELETE: api/timeentries/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTimeEntry(int id)
         {
@@ -342,7 +327,6 @@ namespace TimeTrackingAPI.Controllers
             }
         }
 
-        // GET: api/timeentries/daily-summary?date=2026-06-22
         [HttpGet("daily-summary")]
         public async Task<ActionResult<DailySummaryDto>> GetDailySummary([FromQuery] DateTime date)
         {
